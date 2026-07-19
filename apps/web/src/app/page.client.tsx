@@ -386,10 +386,6 @@ export default function Home() {
               </div>
             </div>
             <div className="flex gap-2">
-              <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm shadow-sm">
-                <Edit className="w-4 h-4" />
-                <span className="hidden sm:inline">Düzenle</span>
-              </button>
               <button
                 onClick={handleOpenPdfInNewTab}
                 disabled={isPrinting}
@@ -514,8 +510,8 @@ export default function Home() {
                                     </button>
                                   </div>
                                 )
-                                : /* 2. Array of Objects (e.g. ihtiyacKalemleri) */
-                                Array.isArray(value)
+                                /* 2. Array of Objects (e.g. ihtiyacKalemleri) */
+                                : Array.isArray(value)
                                 ? (
                                   <div className="flex flex-col gap-3 border border-slate-200 dark:border-slate-700 p-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/30">
                                     {value.map((item: any, idx) => (
