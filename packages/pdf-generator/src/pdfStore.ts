@@ -1,12 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-/**
- * PDF Render için dosya tabanlı geçici store.
- * Next.js development modunda süreçler arası (API ve Page) iletişim kopukluğunu önler.
- */
-
-interface PdfData {
+export interface PdfData {
   templateId: string;
   data: any;
   timestamp: number;
@@ -14,7 +9,7 @@ interface PdfData {
 
 const CACHE_DIR = path.join(process.cwd(), '.pdf-cache');
 
-class PdfStore {
+export class PdfStore {
   constructor() {
     if (!fs.existsSync(CACHE_DIR)) {
       fs.mkdirSync(CACHE_DIR, { recursive: true });

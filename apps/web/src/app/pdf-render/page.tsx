@@ -1,5 +1,5 @@
 import React from "react";
-import { pdfStore } from "../../lib/pdfStore";
+import { pdfStore } from "@dt-asistan/pdf-generator";
 import { TEMPLATE_REGISTRY } from "../../components/templates";
 import * as Templates from "../../components/templates";
 
