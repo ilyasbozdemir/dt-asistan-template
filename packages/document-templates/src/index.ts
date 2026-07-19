@@ -28,3 +28,4 @@ export const TEMPLATE_REGISTRY = [
 export * from './resolver/types';
 export * from './resolver/mappingResolver';
 export * from './resolver/MappingResolverTest';
+export * from './resolver/TemplateResolver';

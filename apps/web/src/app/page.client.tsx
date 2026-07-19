@@ -13,8 +13,9 @@ import {
   Menu,
   Settings,
   X,
+  Database,
 } from "lucide-react";
-import { TEMPLATE_REGISTRY } from "@dt-asistan/document-templates";
+import { TEMPLATE_REGISTRY, TemplateResolver, ProcessMapping } from "@dt-asistan/document-templates";
 import * as Templates from "@dt-asistan/document-templates";
 
 // Basic category grouping
@@ -162,6 +163,135 @@ export default function Home() {
       alert("PDF önizlemesi oluşturulurken bir hata oluştu.");
     } finally {
       setIsPrinting(false);
+    }
+  };
+
+  const handleLoadFromMockDb = async () => {
+    const mockDatabase = {
+      TANIM_Kurum: [
+        {
+          id: 1,
+          kurum_anteti: JSON.stringify(["T.C.", "SAĞLIK BAKANLIĞI", "Ankara İl Sağlık Müdürlüğü"]),
+          detsis_kodu: '95240212',
+          makam_adi: 'İl Sağlık Müdürlüğüne',
+          adres: 'Mustafa Kemal Mah. No:1 Ankara',
+          telefon: '0312 555 44 33',
+          faks: '0312 555 44 34',
+          web_sitesi: 'www.saglik.gov.tr',
+          eposta: 'eposta@saglik.gov.tr',
+          kep_adresi: 'kep@hs01.kep.tr'
+        }
+      ],
+      DATA_TeminDosyasi: [
+        {
+          id: 100,
+          butce_yili: '2026',
+          temin_no_clean: '123',
+          ihtiyac_yeri: 'Poliklinik Hizmetleri',
+          isin_aciklamasi: 'Laboratuvar Malzemeleri Alımı'
+        }
+      ],
+      DATA_TeminKalem: [
+        {
+          id: 1,
+          temin_dosya_id: 100,
+          tasinir_kodu: 'LAB-001',
+          kalem_adi: 'Eldiven',
+          aciklama: 'Nitril',
+          birim: 'Kutu',
+          kdv_orani: 20,
+          miktar: 50
+        },
+        {
+          id: 2,
+          temin_dosya_id: 100,
+          tasinir_kodu: 'LAB-002',
+          kalem_adi: 'Maske',
+          aciklama: 'N95',
+          birim: 'Adet',
+          kdv_orani: 10,
+          miktar: 200
+        }
+      ]
+    };
+
+    const IhtiyacListesiMapping: ProcessMapping = {
+      antetSatirlari: {
+        tablo: 'TANIM_Kurum',
+        sutun: 'kurum_anteti',
+        aciklama: 'Dosyanın antet satırları'
+      },
+      dosyaKonusu: { deger: 'İhtiyaç Listesi', aciklama: 'Belge Başlığı / Konusu' },
+      evrakSayisi: {
+        formul: '{{TANIM_Kurum.detsis_kodu}}-{{DATA_TeminDosyasi.butce_yili}}/{{DATA_TeminDosyasi.temin_no_clean}}',
+        aciklama: 'DETSİS No - Yıl - Dosya No birleşimi'
+      },
+      sunulacakMakamAdi: {
+        tablo: 'TANIM_Kurum',
+        sutun: 'makam_adi',
+        aciklama: 'Sunulacak makam adı'
+      },
+      ihtiyacKalemleri: {
+        tablo: 'DATA_TeminKalem',
+        sutun: '*',
+        iliskili_id: 'temin_dosya_id',
+        altEslestirme: {
+          kodu: 'tasinir_kodu',
+          malzemeAdi: 'kalem_adi',
+          ozelligi: 'aciklama',
+          birimi: 'birim',
+          kdvOrani: 'kdv_orani',
+          miktar: 'miktar'
+        },
+        aciklama: 'İhtiyaç listesi kalemleri'
+      },
+      ihtiyacYeri: {
+        tablo: 'DATA_TeminDosyasi',
+        sutun: 'ihtiyac_yeri',
+        aciklama: 'İhtiyaç listesi yerleri'
+      },
+      isinAciklamasi: {
+        tablo: 'DATA_TeminDosyasi',
+        sutun: 'isin_aciklamasi',
+        aciklama: 'İşin Açıklaması'
+      },
+      olurYazisi: { deger: true, aciklama: 'Olur yazısı oluşturulacak' },
+      kurumIci: { deger: true, aciklama: 'Kurum içi mi?' },
+      kurumAdres: { tablo: 'TANIM_Kurum', sutun: 'adres', varsayilan: '[Adres Belirtilmedi]', aciklama: 'Kurum adresi' },
+      kurumTelefon: { tablo: 'TANIM_Kurum', sutun: 'telefon', varsayilan: '[Telefon Belirtilmedi]', aciklama: 'Kurum telefonu' },
+      kurumFaks: { tablo: 'TANIM_Kurum', sutun: 'faks', varsayilan: '[Faks Belirtilmedi]', aciklama: 'Kurum faks' },
+      kurumWeb: { tablo: 'TANIM_Kurum', sutun: 'web_sitesi', varsayilan: '[Web Adresi Belirtilmedi]', aciklama: 'Kurum web sitesi' },
+      kurumEposta: { tablo: 'TANIM_Kurum', sutun: 'eposta', varsayilan: '[E-Posta Belirtilmedi]', aciklama: 'Kurum e-posta adresi' },
+      kurumKep: { tablo: 'TANIM_Kurum', sutun: 'kep_adresi', varsayilan: '[Kep Adresi Belirtilmedi]', aciklama: 'Kurum kep adresi' }
+    };
+
+    const queryExecutor = async (sql: string, params: any[]) => {
+      const cleanSql = sql.replace(/\s+/g, ' ').trim();
+      const matchSelect = cleanSql.match(/SELECT\s+(.+?)\s+FROM\s+(\w+)(?:\s+WHERE\s+(\w+)\s*=\s*\?)?(?:\s+LIMIT\s+\d+)?/i);
+      if (matchSelect) {
+        const columns = matchSelect[1].trim();
+        const table = matchSelect[2].trim();
+        const filterCol = matchSelect[3]?.trim();
+        const tableRows = (mockDatabase as any)[table] || [];
+        let filtered = [...tableRows];
+        if (filterCol && params.length > 0) {
+          filtered = tableRows.filter((row: any) => String(row[filterCol]) === String(params[0]));
+        }
+        if (columns === '*') {
+          return filtered;
+        } else {
+          return filtered.map((row: any) => ({ [columns]: row[columns] }));
+        }
+      }
+      return [];
+    };
+
+    try {
+      const resolver = new TemplateResolver(queryExecutor);
+      const resolved = await resolver.resolve(IhtiyacListesiMapping, 100);
+      setFormData(resolved);
+    } catch (e) {
+      console.error("Mock DB Çözümleme Hatası:", e);
     }
   };
 
@@ -386,6 +516,13 @@ export default function Home() {
               </div>
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={handleLoadFromMockDb}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm shadow-emerald-600/20 transition-colors text-sm"
+              >
+                <Database className="w-4 h-4" />
+                <span className="hidden sm:inline">Mock Veritabanından Yükle</span>
+              </button>
               <button
                 onClick={handleOpenPdfInNewTab}
                 disabled={isPrinting}
