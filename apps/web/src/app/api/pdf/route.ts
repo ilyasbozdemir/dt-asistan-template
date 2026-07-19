@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 import { pdfStore } from "../../../lib/pdfStore";
 import { templateManager } from "../../../lib/TemplateManager";
+import { initializeTemplates } from "../../../lib/templates-config-index";
+
+// Initialize templates on the server side
+initializeTemplates();
 
 export async function POST(req: NextRequest) {
   try {
@@ -71,7 +75,7 @@ export async function POST(req: NextRequest) {
     pdfStore.remove(id); // Clean up
 
     // PDF'i stream olarak dön
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",

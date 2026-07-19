@@ -7,9 +7,9 @@ import * as Templates from "../../components/templates";
 export default async function PdfRenderPage({
   searchParams,
 }: {
-  searchParams: { id?: string };
+  searchParams: Promise<{ id?: string }>;
 }) {
-  const id = searchParams.id;
+  const { id } = await searchParams;
   if (!id) {
     return <div>Missing ID</div>;
   }
