@@ -14,8 +14,8 @@ import {
   Settings,
   X,
 } from "lucide-react";
-import { TEMPLATE_REGISTRY } from "../components/templates";
-import * as Templates from "../components/templates";
+import { TEMPLATE_REGISTRY } from "@dt-asistan/document-templates";
+import * as Templates from "@dt-asistan/document-templates";
 
 // Basic category grouping
 const groupedTemplates = TEMPLATE_REGISTRY.reduce((acc, curr) => {

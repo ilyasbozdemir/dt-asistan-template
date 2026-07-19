@@ -1,12 +1,6 @@
-/**
- * DOCUMENT HEADER
- * 
- * Antet: Sol logo, kurum adları (merkez), sağ logo
- */
-
 import React from 'react'
-import { BaseTemplate } from '../../lib/base.schema'
-import { GLOBAL_THEME } from '../../lib/theme.config'
+import { BaseTemplate } from '../base.schema'
+import { GLOBAL_THEME } from '../theme.config'
 
 interface DocumentHeaderProps {
   data?: Partial<BaseTemplate>
@@ -110,9 +104,6 @@ export const DocumentHeader: React.FC<DocumentHeaderProps> = ({ data, hideLogos 
   )
 }
 
-/**
- * Compact header variant (Daha küçük)
- */
 export const DocumentHeaderCompact: React.FC<DocumentHeaderProps> = ({ data }) => {
   return (
     <div style={{ textAlign: 'center', marginBottom: '15px', fontSize: '11pt' }}>

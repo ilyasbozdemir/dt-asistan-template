@@ -17,7 +17,7 @@ import {
   useDocumentValidation,
   openPDFPreview,
 } from "../lib/useDocumentRender";
-import { DocumentLayout } from "./document/DocumentLayout";
+import { DocumentLayout } from "@dt-asistan/document-templates";
 import { GLOBAL_THEME } from "../lib/theme.config";
 import { AlertCircle, Download, Loader2, Printer, Eye } from "lucide-react";
 

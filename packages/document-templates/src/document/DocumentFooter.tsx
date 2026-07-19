@@ -1,43 +1,36 @@
-/**
- * DOCUMENT FOOTER
- * 
- * Alt bilgi: Kurum adresi, telefon, email, web, KEP
- * Sadece kurumIci = false ise gösterilir
- */
-
-import React from 'react'
-import { BaseTemplate } from '../../lib/base.schema'
+import React from "react";
+import { BaseTemplate } from "../base.schema";
 
 interface DocumentFooterProps {
-  data?: Partial<BaseTemplate>
+  data?: Partial<BaseTemplate>;
 }
 
 export const DocumentFooter: React.FC<DocumentFooterProps> = ({ data }) => {
   if (!data || data.kurumIci) {
-    return null
+    return null;
   }
 
   return (
     <div
       style={{
-        position: 'absolute',
-        bottom: '1.5cm',
-        left: '1.5cm',
-        right: '1.5cm',
-        paddingTop: '10px',
-        borderTop: `2px solid ${data.solLogo ? '#c00' : '#999'}`,
-        fontSize: '8pt',
-        color: '#333',
-        lineHeight: 1.2
+        position: "absolute",
+        bottom: "1.5cm",
+        left: "1.5cm",
+        right: "1.5cm",
+        paddingTop: "10px",
+        borderTop: `2px solid ${data.solLogo ? "#c00" : "#999"}`,
+        fontSize: "8pt",
+        color: "#333",
+        lineHeight: 1.2,
       }}
     >
-      <div style={{ display: 'table', width: '100%' }}>
+      <div style={{ display: "table", width: "100%" }}>
         {/* SOL KOLON - KURUM BİLGİSİ */}
         <div
           style={{
-            display: 'table-cell',
-            verticalAlign: 'top',
-            width: '50%'
+            display: "table-cell",
+            verticalAlign: "top",
+            width: "50%",
           }}
         >
           {data.kurumAdres && (
@@ -65,10 +58,10 @@ export const DocumentFooter: React.FC<DocumentFooterProps> = ({ data }) => {
         {/* SAĞ KOLON - İLETİŞİ KİŞİSİ */}
         <div
           style={{
-            display: 'table-cell',
-            textAlign: 'right',
-            verticalAlign: 'top',
-            width: '50%'
+            display: "table-cell",
+            textAlign: "right",
+            verticalAlign: "top",
+            width: "50%",
           }}
         >
           {data.hazirlayanPersonelAdi && (
@@ -87,5 +80,5 @@ export const DocumentFooter: React.FC<DocumentFooterProps> = ({ data }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

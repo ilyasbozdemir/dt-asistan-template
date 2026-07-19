@@ -1,9 +1,5 @@
 import React from "react";
 
-/**
- * PERSONEL CARD
- * Hazırlayan, Talep Eden vb. personel bilgisini gösteren blok
- */
 interface PersonelCardProps {
   adSoyad?: string | null;
   unvan?: string | null;
@@ -70,16 +66,12 @@ export const PersonelCard: React.FC<PersonelCardProps> = ({
   );
 };
 
-/**
- * APPROVAL SIGNATURE
- * Onay/İmza bloğu - "OLUR" yazısı, tarih, ad-soyad, unvan
- */
 interface ApprovalSignatureProps {
   title?: string;
   date?: string | null;
   adSoyad?: string | null;
   unvan?: string | null;
-  showSpace?: boolean; // İmza için boş alan
+  showSpace?: boolean;
   marginTop?: number;
   align?: "left" | "center" | "right";
 }
@@ -114,28 +106,24 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
           lineHeight: 1.5,
         }}
       >
-        {/* BAŞLIK */}
         <div
           style={{ fontWeight: "bold", fontSize: "12pt", marginBottom: "4px" }}
         >
           {title}
         </div>
 
-        {/* TARİH */}
         {date && (
           <div style={{ fontSize: "11pt", marginBottom: "8px" }}>
             {date}
           </div>
         )}
 
-        {/* İMZA ALANI */}
         {showSpace && (
           <div
             style={{ minHeight: "30px", marginBottom: "4px" }}
           />
         )}
 
-        {/* AD-SOYAD */}
         {adSoyad && (
           <div
             style={{ fontSize: "11pt", fontWeight: "bold", marginTop: "4px" }}
@@ -144,7 +132,6 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
           </div>
         )}
 
-        {/* UNVAN */}
         {unvan && (
           <div style={{ fontSize: "11pt" }}>
             {unvan}
@@ -155,10 +142,6 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
   );
 };
 
-/**
- * COMMISSION MEMBERS
- * Komisyon üyeleri listesi
- */
 interface CommissionMember {
   adSoyad: string;
   unvan: string;
@@ -203,10 +186,6 @@ export const CommissionList: React.FC<CommissionListProps> = ({
   );
 };
 
-/**
- * METADATA BLOCK
- * Evrak sayısı, tarih vb. bilgiler
- */
 interface MetadataBlockProps {
   evrakSayisi?: string;
   tarih?: string;
@@ -231,7 +210,6 @@ export const MetadataBlock: React.FC<MetadataBlockProps> = ({
         pageBreakInside: "avoid",
       }}
     >
-      {/* Sol Taraf: Sayı ve Konu (Sayfanın yarısını geçemez) */}
       <div style={{ maxWidth: "50%" }}>
         <table
           style={{
@@ -279,7 +257,6 @@ export const MetadataBlock: React.FC<MetadataBlockProps> = ({
         </table>
       </div>
 
-      {/* Sağ Taraf: Tarih */}
       {tarih && (
         <div style={{ fontSize: "11pt", textAlign: "right" }}>
           <strong>Tarih:</strong> {tarih}

@@ -1,14 +1,5 @@
-/**
- * DOCUMENT TABLE
- * 
- * Reusable tablo komponenti
- * - Print-safe CSS
- * - Flexible column definitions
- * - Custom cell rendering
- */
-
 import React from 'react'
-import { GLOBAL_THEME } from '../../lib/theme.config'
+import { GLOBAL_THEME } from '../theme.config'
 
 interface ColumnDef<T> {
   key: keyof T | string
@@ -128,10 +119,6 @@ export const DocumentTable = React.forwardRef<
 
 DocumentTable.displayName = 'DocumentTable'
 
-/**
- * Özet tablo (özel formatlanmış)
- * Örn: Toplam tutar, KDV vs.
- */
 interface SummaryTableProps {
   rows: Array<{ label: string; value: string | number }>
   isBold?: boolean

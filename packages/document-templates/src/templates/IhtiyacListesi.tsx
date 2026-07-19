@@ -1,17 +1,17 @@
 import React from "react";
-import { DocumentLayout } from "../../document/DocumentLayout";
-import { DocumentTable } from "../../document/DocumentTable";
+import { DocumentLayout } from "../document/DocumentLayout";
+import { DocumentTable } from "../document/DocumentTable";
 import {
   ApprovalSignature,
   MetadataBlock,
   PersonelCard,
-} from "../../document/ApprovalSignature";
+} from "../document/ApprovalSignature";
 import {
   DEFAULT_LIMITS,
   LANDSCAPE_LIMITS,
   paginateData,
-} from "../../document/DynamicPaginatedTable";
-import { IhtiyacListesiType } from "../../../lib/schemas/IhtiyacListesi.schema";
+} from "../document/DynamicPaginatedTable";
+import { IhtiyacListesiType } from "./IhtiyacListesi.schema";
 
 interface IhtiyacListesiProps {
   data?: Partial<IhtiyacListesiType>;
@@ -30,7 +30,6 @@ export function IhtiyacListesi({
   middlePageLimit,
   lastPageLimit,
 }: IhtiyacListesiProps) {
-  // Tablo sütunları
   const columns: any[] = [
     { key: "siraNo", label: "Sıra No", width: "8%", align: "center" },
     { key: "kodu", label: "Kodu", width: "12%", align: "left" },
@@ -41,7 +40,6 @@ export function IhtiyacListesi({
     { key: "miktar", label: "Miktar", width: "12%", align: "right" },
   ];
 
-  // Sayfalama limitlerini belirle (prop olarak verilmediyse data içinden oku)
   const fLimit = firstPageLimit ?? (data as any).firstPageLimit;
   const mLimit = middlePageLimit ?? (data as any).middlePageLimit;
   const lLimit = lastPageLimit ?? (data as any).lastPageLimit;
@@ -83,10 +81,8 @@ export function IhtiyacListesi({
             totalPages={pages.length}
             hideHeader={!isFirstPage}
           >
-            {/* Sadece İlk Sayfada Gösterilecek Alanlar */}
             {isFirstPage && (
               <>
-                {/* METADATA (Sayı, Tarih, Konu) */}
                 <MetadataBlock
                   evrakSayisi={data.evrakSayisi}
                   tarih={data.tarih}
@@ -94,7 +90,6 @@ export function IhtiyacListesi({
                   showBorder={false}
                 />
 
-                {/* BAŞLIK - Sunulacak Makam */}
                 <div
                   style={{
                     textAlign: "center",
@@ -108,7 +103,6 @@ export function IhtiyacListesi({
                   {data.sunulacakMakamAdi}
                 </div>
 
-                {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 1 */}
                 <div
                   style={{
                     textAlign: "justify",
@@ -123,7 +117,6 @@ export function IhtiyacListesi({
                   edilmesi gerekmektedir.
                 </div>
 
-                {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 2 */}
                 <div
                   style={{
                     textAlign: "justify",
@@ -138,7 +131,6 @@ export function IhtiyacListesi({
                   maddesine göre temini için gereğini olurlarınıza arz ederim.
                 </div>
 
-                {/* TALEP EDEN - Sağ hizalanmış */}
                 <PersonelCard
                   adSoyad={data.talepEdenPersonelAdi}
                   unvan={data.talepEdenPersonelUnvan}
@@ -149,7 +141,6 @@ export function IhtiyacListesi({
               </>
             )}
 
-            {/* KALEMLER TABLOSU (Her sayfadaki parçası) */}
             <DocumentTable
               columns={columns}
               data={pageItems}
@@ -157,7 +148,6 @@ export function IhtiyacListesi({
               striped={false}
             />
 
-            {/* ONAY BLOĞU - Sadece Son Sayfada Gösterilir */}
             {isLastPage && data.olurYazisi && (
               <div style={{ marginTop: "auto" }}>
                 <ApprovalSignature

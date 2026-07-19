@@ -1,16 +1,6 @@
-/**
- * DOCUMENT LAYOUT
- *
- * Tüm resmi belgeler için base layout component
- * - Header (Antet)
- * - Content area
- * - Footer (Kurum bilgisi)
- * - Print-optimized CSS
- */
-
 import React, { ReactNode } from "react";
-import { BaseTemplate } from "../../lib/base.schema";
-import { GLOBAL_THEME } from "../../lib/theme.config";
+import { BaseTemplate } from "../base.schema";
+import { GLOBAL_THEME } from "../theme.config";
 import { DocumentHeader } from "./DocumentHeader";
 import { DocumentFooter } from "./DocumentFooter";
 
@@ -46,7 +36,6 @@ export const DocumentLayout = React.forwardRef<
   ) => {
     const margins = GLOBAL_THEME.page.margins;
 
-    // Calculate width/height based on pageSize and orientation
     let docWidth = "21cm";
     let docHeight = "29.7cm";
 
@@ -58,7 +47,6 @@ export const DocumentLayout = React.forwardRef<
       docHeight = orientation === "landscape" ? "29.7cm" : "42cm";
     }
 
-    // Dynamic Print Styles (Only @page and body require global injection, others are inline)
     const dynamicPrintStyles = `
       @media print {
         @page {
@@ -100,10 +88,10 @@ export const DocumentLayout = React.forwardRef<
       >
         <style dangerouslySetInnerHTML={{ __html: dynamicPrintStyles }} />
 
-        {/* HEADER - Antet (Kurum Logosu ve Bilgisi) */}
+        {/* HEADER */}
         {!hideHeader && <DocumentHeader data={data} />}
 
-        {/* BAŞLIK (varsa) */}
+        {/* BAŞLIK */}
         {title && (
           <div
             style={{
@@ -124,7 +112,7 @@ export const DocumentLayout = React.forwardRef<
           {children}
         </div>
 
-        {/* FOOTER - Kurum İletişim Bilgisi */}
+        {/* FOOTER */}
         {!hideFooter && !data?.kurumIci && <DocumentFooter data={data} />}
 
         {/* DİNAMİK SAYFA NUMARASI */}
