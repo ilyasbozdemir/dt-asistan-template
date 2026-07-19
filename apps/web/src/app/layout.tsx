@@ -13,8 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cıktı Merkezi Şablon Sistemi",
-  description: "Modern, dinamik ve esnek belge şablon yönetim sistemi.",
+  title: "DT Asistan Template Engine",
+  description: "DT Asistan dinamik belge şablon motoru ve çıktı merkezi.",
+  icons: {
+    icon:
+      "https://raw.githubusercontent.com/ilyasbozdemir/dt-asistan-app/main/apps/app-desktop/resources/icon.png",
+    apple:
+      "https://raw.githubusercontent.com/ilyasbozdemir/dt-asistan-app/main/apps/app-desktop/resources/icon.png",
+  },
 };
 
 export default function RootLayout({
