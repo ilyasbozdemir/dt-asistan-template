@@ -9,7 +9,7 @@ import React, { useRef, useState } from "react";
 // Mock workspace store since it's missing
 const useWorkspaceStore = () => ({ activeDosyaId: 1 });
 
-import { IhtiyacListesiDocument } from "./IhtiyacListesi";
+import { IhtiyacListesi } from "./templates";
 import { useIhtiyacListesiData } from "../lib/useDocumentData";
 import {
   useDocumentPrint,
@@ -17,7 +17,7 @@ import {
   useDocumentValidation,
   openPDFPreview,
 } from "../lib/useDocumentRender";
-import { DocumentLayout } from "./DocumentLayout";
+import { DocumentLayout } from "./document/DocumentLayout";
 import { GLOBAL_THEME } from "../lib/theme.config";
 import { AlertCircle, Download, Loader2, Printer, Eye } from "lucide-react";
 
@@ -252,7 +252,7 @@ export function IhtiyacListesiTab(): React.JSX.Element {
           overflowX: "auto"
         }}
       >
-        <IhtiyacListesiDocument
+        <IhtiyacListesi
           data={testData}
           pageSize={pageSize}
           orientation={orientation}
@@ -382,7 +382,7 @@ export function DocumentPreviewModal({
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <div ref={docRef}>
-              {data && <IhtiyacListesiDocument data={data} />}
+              {data && <IhtiyacListesi data={data} />}
             </div>
           )}
         </div>

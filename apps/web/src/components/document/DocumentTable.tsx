@@ -8,7 +8,7 @@
  */
 
 import React from 'react'
-import { GLOBAL_THEME } from '../lib/theme.config'
+import { GLOBAL_THEME } from '../../lib/theme.config'
 
 interface ColumnDef<T> {
   key: keyof T | string

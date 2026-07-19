@@ -5,8 +5,8 @@
  */
 
 import React from 'react'
-import { BaseTemplate } from '../lib/base.schema'
-import { GLOBAL_THEME } from '../lib/theme.config'
+import { BaseTemplate } from '../../lib/base.schema'
+import { GLOBAL_THEME } from '../../lib/theme.config'
 
 interface DocumentHeaderProps {
   data?: Partial<BaseTemplate>

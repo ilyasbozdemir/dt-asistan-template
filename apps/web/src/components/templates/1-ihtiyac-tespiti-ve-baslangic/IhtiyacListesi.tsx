@@ -1,158 +1,178 @@
 import React from "react";
-import { DocumentLayout } from "../../DocumentLayout";
+import { DocumentLayout } from "../../document/DocumentLayout";
+import { DocumentTable } from "../../document/DocumentTable";
+import {
+  ApprovalSignature,
+  MetadataBlock,
+  PersonelCard,
+} from "../../document/ApprovalSignature";
+import {
+  DEFAULT_LIMITS,
+  LANDSCAPE_LIMITS,
+  paginateData,
+} from "../../document/DynamicPaginatedTable";
 import { IhtiyacListesiType } from "../../../lib/schemas/IhtiyacListesi.schema";
-import { ApprovalSignature } from "../../ApprovalSignature";
 
 interface IhtiyacListesiProps {
   data?: Partial<IhtiyacListesiType>;
+  pageSize?: "A4" | "A3";
+  orientation?: "portrait" | "landscape";
+  firstPageLimit?: number;
+  middlePageLimit?: number;
+  lastPageLimit?: number;
 }
 
-/**
- * PATTERN (Şablon Yapısı):
- * 1. Tüm belgeleri DocumentLayout ile sarmalıyoruz.
- * 2. DocumentLayout, içerisine aldığı data props'u ile Antet (Header) ve Footer kısımlarını OTOMATİK oluşturur.
- * 3. title props'u ile belgenin başlığını (örneğin "İHTİYAÇ LİSTESİ") verebilirsiniz.
- * 4. Siz sadece belgenin gövdesini (body) yazarsınız.
- */
-export function IhtiyacListesi({ data = {} }: IhtiyacListesiProps) {
+export function IhtiyacListesi({
+  data = {},
+  pageSize = "A4",
+  orientation = "portrait",
+  firstPageLimit,
+  middlePageLimit,
+  lastPageLimit,
+}: IhtiyacListesiProps) {
+  // Tablo sütunları
+  const columns: any[] = [
+    { key: "siraNo", label: "Sıra No", width: "8%", align: "center" },
+    { key: "kodu", label: "Kodu", width: "12%", align: "left" },
+    { key: "malzemeAdi", label: "Malzeme Adı", width: "25%", align: "left" },
+    { key: "ozelligi", label: "Özelliği", width: "20%", align: "left" },
+    { key: "birimi", label: "Birimi", width: "10%", align: "center" },
+    { key: "kdvOrani", label: "KDV %", width: "8%", align: "center" },
+    { key: "miktar", label: "Miktar", width: "12%", align: "right" },
+  ];
+
+  // Sayfalama limitlerini belirle (prop olarak verilmediyse data içinden oku)
+  const fLimit = firstPageLimit ?? (data as any).firstPageLimit;
+  const mLimit = middlePageLimit ?? (data as any).middlePageLimit;
+  const lLimit = lastPageLimit ?? (data as any).lastPageLimit;
+
+  const limits = {
+    firstPage: fLimit !== undefined && fLimit !== null
+      ? Number(fLimit)
+      : (orientation === "landscape"
+        ? LANDSCAPE_LIMITS.firstPage
+        : DEFAULT_LIMITS.firstPage),
+    middle: mLimit !== undefined && mLimit !== null
+      ? Number(mLimit)
+      : (orientation === "landscape"
+        ? LANDSCAPE_LIMITS.middle
+        : DEFAULT_LIMITS.middle),
+    lastPage: lLimit !== undefined && lLimit !== null
+      ? Number(lLimit)
+      : (orientation === "landscape"
+        ? LANDSCAPE_LIMITS.lastPage
+        : DEFAULT_LIMITS.lastPage),
+  };
+  const items = data.ihtiyacKalemleri || [];
+  const pages = paginateData(items, limits);
+
   return (
-    <DocumentLayout data={data}>
-      {/* ÜST BİLGİ ALANI (Sayı, Konu, Tarih vb.) */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-        }}
-      >
-        <div>
-          <table style={{ border: "none" }}>
-            <tbody>
-              <tr>
-                <td style={{ fontWeight: "bold", paddingRight: "10px" }}>
-                  Sayı
-                </td>
-                <td>: {data?.evrakSayisi}</td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: "bold", paddingRight: "10px" }}>
-                  Konu
-                </td>
-                <td>: {data?.dosyaKonusu}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div>
-          <strong>Tarih:</strong> {data?.tarih || data?.dosyaTarihi}
-        </div>
-      </div>
+    <>
+      {pages.map((pageItems, pageIdx) => {
+        const isFirstPage = pageIdx === 0;
+        const isLastPage = pageIdx === pages.length - 1;
 
-      {/* MAKAM VE İÇERİK METNİ */}
-      <div
-        style={{
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: "14pt",
-          margin: "40px 0",
-        }}
-      >
-        {data?.sunulacakMakamAdi}
-      </div>
+        return (
+          <DocumentLayout
+            key={pageIdx}
+            data={data}
+            hideFooter={false}
+            pageSize={pageSize}
+            orientation={orientation}
+            pageNumber={pageIdx + 1}
+            totalPages={pages.length}
+            hideHeader={!isFirstPage}
+          >
+            {/* Sadece İlk Sayfada Gösterilecek Alanlar */}
+            {isFirstPage && (
+              <>
+                {/* METADATA (Sayı, Tarih, Konu) */}
+                <MetadataBlock
+                  evrakSayisi={data.evrakSayisi}
+                  tarih={data.tarih}
+                  dosyaKonusu={data.dosyaKonusu}
+                  showBorder={false}
+                />
 
-      <div
-        style={{ textIndent: "40px", lineHeight: "1.5", textAlign: "justify" }}
-      >
-        {data?.ihtiyacYeri}{" "}
-        ihtiyacı olan aşağıda yazılı mal/hizmet kalemlerinin temin edilmesi
-        gerekmektedir.
-        <br />
-        Söz konusu ihtiyacın 4734 sayılı Kamu İhale Kanunun{" "}
-        {data?.maddeNo || "22/d"}{" "}
-        maddesine göre temini için gereğini olurlarınıza arz ederim.
-      </div>
-
-      {/* TALEP EDEN (Sağ Alt) */}
-      <div
-        style={{ textAlign: "right", marginTop: "40px", marginBottom: "40px" }}
-      >
-        {data?.talepEdenPersonelAdi}
-        <br />
-        {data?.talepEdenPersonelUnvan}
-      </div>
-
-      {/* İHTİYAÇ KALEMLERİ TABLOSU */}
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          marginTop: "20px",
-          border: "1px solid black",
-        }}
-        border={1}
-      >
-        <thead>
-          <tr style={{ backgroundColor: "#f5f5f5", textAlign: "center" }}>
-            <th style={{ padding: "8px" }}>Sıra No</th>
-            <th style={{ padding: "8px" }}>Kodu</th>
-            <th style={{ padding: "8px" }}>Malzeme Adı</th>
-            <th style={{ padding: "8px" }}>Özelliği</th>
-            <th style={{ padding: "8px" }}>Birimi</th>
-            <th style={{ padding: "8px" }}>KDV Oranı (%)</th>
-            <th style={{ padding: "8px" }}>Miktar</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.ihtiyacKalemleri && data.ihtiyacKalemleri.length > 0
-            ? (
-              data.ihtiyacKalemleri.map((kalem: any, index: number) => (
-                <tr key={index}>
-                  <td style={{ padding: "6px", textAlign: "center" }}>
-                    {kalem.siraNo || index + 1}
-                  </td>
-                  <td style={{ padding: "6px" }}>{kalem.kodu}</td>
-                  <td style={{ padding: "6px" }}>{kalem.malzemeAdi}</td>
-                  <td style={{ padding: "6px" }}>{kalem.ozelligi}</td>
-                  <td style={{ padding: "6px", textAlign: "center" }}>
-                    {kalem.birimi}
-                  </td>
-                  <td style={{ padding: "6px", textAlign: "center" }}>
-                    {kalem.kdvOrani}
-                  </td>
-                  <td style={{ padding: "6px", textAlign: "center" }}>
-                    {kalem.miktar}
-                  </td>
-                </tr>
-              ))
-            )
-            : (
-              <tr>
-                <td
-                  colSpan={7}
+                {/* BAŞLIK - Sunulacak Makam */}
+                <div
                   style={{
-                    padding: "15px",
                     textAlign: "center",
-                    fontStyle: "italic",
+                    fontWeight: "bold",
+                    fontSize: "12pt",
+                    textTransform: "uppercase",
+                    marginBottom: "20px",
+                    pageBreakInside: "avoid",
                   }}
                 >
-                  İhtiyaç kalemi bulunamadı.
-                </td>
-              </tr>
-            )}
-        </tbody>
-      </table>
+                  {data.sunulacakMakamAdi}
+                </div>
 
-      {/* ONAY BLOĞU */}
-      {data?.olurYazisi && (
-        <ApprovalSignature
-          title="OLUR"
-          date={data?.dosyaTarihi}
-          adSoyad={data?.onaylayanPersonelAdi}
-          unvan={data?.onaylayanPersonelUnvan}
-          showSpace={true}
-          marginTop={40}
-        />
-      )}
-    </DocumentLayout>
+                {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 1 */}
+                <div
+                  style={{
+                    textAlign: "justify",
+                    textIndent: "40px",
+                    marginBottom: "15px",
+                    fontSize: "12pt",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {data.ihtiyacYeri}{" "}
+                  ihtiyacı olan aşağıda yazılı mal/hizmet kalemlerinin temin
+                  edilmesi gerekmektedir.
+                </div>
+
+                {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 2 */}
+                <div
+                  style={{
+                    textAlign: "justify",
+                    textIndent: "40px",
+                    marginBottom: "20px",
+                    fontSize: "12pt",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Söz konusu ihtiyacın 4734 sayılı Kamu İhale Kanunun{" "}
+                  {data.maddeNo}{" "}
+                  maddesine göre temini için gereğini olurlarınıza arz ederim.
+                </div>
+
+                {/* TALEP EDEN - Sağ hizalanmış */}
+                <PersonelCard
+                  adSoyad={data.talepEdenPersonelAdi}
+                  unvan={data.talepEdenPersonelUnvan}
+                  align="right"
+                  marginTop={20}
+                  marginBottom={30}
+                />
+              </>
+            )}
+
+            {/* KALEMLER TABLOSU (Her sayfadaki parçası) */}
+            <DocumentTable
+              columns={columns}
+              data={pageItems}
+              emptyMessage="Kalem bulunamadı"
+              striped={false}
+            />
+
+            {/* ONAY BLOĞU - Sadece Son Sayfada Gösterilir */}
+            {isLastPage && data.olurYazisi && (
+              <div style={{ marginTop: "auto" }}>
+                <ApprovalSignature
+                  title={(data as any).olurBaslik || "OLUR"}
+                  date={data.dosyaTarihi}
+                  adSoyad={data.onaylayanPersonelAdi}
+                  unvan={data.onaylayanPersonelUnvan}
+                  showSpace={true}
+                  marginTop={40}
+                />
+              </div>
+            )}
+          </DocumentLayout>
+        );
+      })}
+    </>
   );
 }

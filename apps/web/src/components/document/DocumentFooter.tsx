@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { BaseTemplate } from '../lib/base.schema'
+import { BaseTemplate } from '../../lib/base.schema'
 
 interface DocumentFooterProps {
   data?: Partial<BaseTemplate>

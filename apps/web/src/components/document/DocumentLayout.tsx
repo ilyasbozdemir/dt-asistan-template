@@ -9,8 +9,8 @@
  */
 
 import React, { ReactNode } from "react";
-import { BaseTemplate } from "../lib/base.schema";
-import { GLOBAL_THEME } from "../lib/theme.config";
+import { BaseTemplate } from "../../lib/base.schema";
+import { GLOBAL_THEME } from "../../lib/theme.config";
 import { DocumentHeader } from "./DocumentHeader";
 import { DocumentFooter } from "./DocumentFooter";
 
@@ -19,6 +19,7 @@ interface DocumentLayoutProps {
   data?: Partial<BaseTemplate>;
   title?: string;
   hideFooter?: boolean;
+  hideHeader?: boolean;
   pageSize?: "A4" | "A3";
   orientation?: "portrait" | "landscape";
   pageNumber?: number;
@@ -35,6 +36,7 @@ export const DocumentLayout = React.forwardRef<
       data,
       title,
       hideFooter = false,
+      hideHeader = false,
       pageSize = "A4",
       orientation = "portrait",
       pageNumber,
@@ -124,7 +126,7 @@ export const DocumentLayout = React.forwardRef<
         <style dangerouslySetInnerHTML={{ __html: dynamicPrintStyles }} />
 
         {/* HEADER - Antet (Kurum Logosu ve Bilgisi) */}
-        <DocumentHeader data={data} />
+        {!hideHeader && <DocumentHeader data={data} />}
 
         {/* BAŞLIK (varsa) */}
         {title && (
@@ -156,9 +158,12 @@ export const DocumentLayout = React.forwardRef<
             style={{
               position: "absolute",
               bottom: "1cm",
-              right: "1.5cm",
+              left: "0",
+              right: "0",
+              textAlign: "center",
               fontSize: "10pt",
-              color: "#666",
+              fontWeight: "bold",
+              color: "#000",
             }}
           >
             {pageNumber} / {totalPages}
