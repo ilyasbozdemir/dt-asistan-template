@@ -9,17 +9,17 @@ import React, { useRef, useState } from "react";
 // Mock workspace store since it's missing
 const useWorkspaceStore = () => ({ activeDosyaId: 1 });
 
-import { IhtiyacListesi } from "./templates";
+import { IhtiyacListesi } from "@dt-asistan/document-templates";
 import { useIhtiyacListesiData } from "../lib/useDocumentData";
 import {
+  openPDFPreview,
   useDocumentPrint,
   useDocumentRender,
   useDocumentValidation,
-  openPDFPreview,
 } from "../lib/useDocumentRender";
 import { DocumentLayout } from "@dt-asistan/document-templates";
 import { GLOBAL_THEME } from "../lib/theme.config";
-import { AlertCircle, Download, Loader2, Printer, Eye } from "lucide-react";
+import { AlertCircle, Download, Eye, Loader2, Printer } from "lucide-react";
 
 /**
  * TAB 1: İhtiyaç Listesi - REACT TSX İLE
@@ -30,7 +30,7 @@ import { AlertCircle, Download, Loader2, Printer, Eye } from "lucide-react";
  * ✅ React component olarak render eder
  * ✅ PDF/Print/DOCX olarak export eder
  */
-export function IhtiyacListesiTab(): React.JSX.Element {
+export function ExampleCiktiScreen(): React.JSX.Element {
   const { activeDosyaId } = useWorkspaceStore();
   const docRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +47,9 @@ export function IhtiyacListesiTab(): React.JSX.Element {
   // 3. STATE
   const [exportFormat, setExportFormat] = useState<"pdf" | "docx">("pdf");
   const [pageSize, setPageSize] = useState<"A4" | "A3">("A4");
-  const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
+  const [orientation, setOrientation] = useState<"portrait" | "landscape">(
+    "portrait",
+  );
 
   // 4. VALIDASYON KONTROL
   const isValid = validation.valid;
@@ -92,7 +94,10 @@ export function IhtiyacListesiTab(): React.JSX.Element {
   const handlePreview = async () => {
     if (!docRef.current) return;
     try {
-      await openPDFPreview(docRef.current, `ihtiyac-listesi-onizleme-${activeDosyaId}`);
+      await openPDFPreview(
+        docRef.current,
+        `ihtiyac-listesi-onizleme-${activeDosyaId}`,
+      );
       showToast("Önizleme penceresi açıldı", "success");
     } catch (err) {
       showToast(`Önizleme hatası: ${(err as Error).message}`, "error");
@@ -136,18 +141,20 @@ export function IhtiyacListesiTab(): React.JSX.Element {
   // Örnek testi kolaylaştırmak için çok sayıda kalem ekleyelim ki sayfalama testi kolay olsun
   const testData = {
     ...data,
-    ihtiyacKalemleri: data.ihtiyacKalemleri && data.ihtiyacKalemleri.length < 15 ? [
-      ...data.ihtiyacKalemleri,
-      ...Array.from({ length: 25 }, (_, i) => ({
-        siraNo: (data.ihtiyacKalemleri?.length || 0) + i + 1,
-        kodu: `TST-0${i}`,
-        malzemeAdi: `Deneme Kalemi ${i + 1}`,
-        ozelligi: "Test amaçlı otomatik üretildi",
-        birimi: "Adet",
-        kdvOrani: "20",
-        miktar: 10 + i
-      }))
-    ] : data.ihtiyacKalemleri
+    ihtiyacKalemleri: data.ihtiyacKalemleri && data.ihtiyacKalemleri.length < 15
+      ? [
+        ...data.ihtiyacKalemleri,
+        ...Array.from({ length: 25 }, (_, i) => ({
+          siraNo: (data.ihtiyacKalemleri?.length || 0) + i + 1,
+          kodu: `TST-0${i}`,
+          malzemeAdi: `Deneme Kalemi ${i + 1}`,
+          ozelligi: "Test amaçlı otomatik üretildi",
+          birimi: "Adet",
+          kdvOrani: "20",
+          miktar: 10 + i,
+        })),
+      ]
+      : data.ihtiyacKalemleri,
   };
 
   return (
@@ -177,7 +184,9 @@ export function IhtiyacListesiTab(): React.JSX.Element {
 
         {/* SAYFA BOYUTU SEÇİMİ */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs text-slate-500 font-medium">Sayfa Boyutu</span>
+          <span className="text-xs text-slate-500 font-medium">
+            Sayfa Boyutu
+          </span>
           <select
             value={pageSize}
             onChange={(e) => setPageSize(e.target.value as any)}
@@ -190,7 +199,9 @@ export function IhtiyacListesiTab(): React.JSX.Element {
 
         {/* YÖNLENDİRME SEÇİMİ */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs text-slate-500 font-medium">Yönlendirme</span>
+          <span className="text-xs text-slate-500 font-medium">
+            Yönlendirme
+          </span>
           <select
             value={orientation}
             onChange={(e) => setOrientation(e.target.value as any)}
@@ -249,7 +260,7 @@ export function IhtiyacListesiTab(): React.JSX.Element {
           display: "flex",
           flexDirection: "column",
           gap: "20px",
-          overflowX: "auto"
+          overflowX: "auto",
         }}
       >
         <IhtiyacListesi
@@ -327,7 +338,7 @@ export function CiktiMerkeziMultiTab(): React.JSX.Element {
 
       {/* TAB CONTENTS */}
       <div>
-        {activeTab === "ihtiyac" && <IhtiyacListesiTab />}
+        {activeTab === "ihtiyac" && <ExampleCiktiScreen />}
         {/* activeTab === 'luzum' && <LuzumMuzekkeresiTab /> */}
         {/* activeTab === 'harcama' && <HarcamaTalimatiTab /> */}
       </div>

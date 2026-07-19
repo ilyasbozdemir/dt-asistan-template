@@ -1,7 +1,7 @@
 import React from "react";
 import { pdfStore } from "@dt-asistan/pdf-generator";
-import { TEMPLATE_REGISTRY } from "../../components/templates";
-import * as Templates from "../../components/templates";
+import { TEMPLATE_REGISTRY } from "@dt-asistan/document-templates";
+import * as Templates from "@dt-asistan/document-templates";
 
 // Bu sayfa Server Component olarak çalışır ve PDF için statik render sunar.
 export default async function PdfRenderPage({
