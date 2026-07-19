@@ -21,6 +21,8 @@ interface DocumentLayoutProps {
   hideFooter?: boolean;
   pageSize?: "A4" | "A3";
   orientation?: "portrait" | "landscape";
+  pageNumber?: number;
+  totalPages?: number;
 }
 
 export const DocumentLayout = React.forwardRef<
@@ -35,6 +37,8 @@ export const DocumentLayout = React.forwardRef<
       hideFooter = false,
       pageSize = "A4",
       orientation = "portrait",
+      pageNumber,
+      totalPages,
     },
     ref,
   ) => {
@@ -71,7 +75,10 @@ export const DocumentLayout = React.forwardRef<
           margin: 0 auto !important;
           width: 100% !important;
           max-width: 100% !important;
-          min-height: 0 !important;
+          min-height: ${docHeight} !important;
+          height: ${docHeight} !important;
+          page-break-after: always !important;
+          page-break-inside: avoid !important;
         }
 
         /* Page break rules */
@@ -100,6 +107,7 @@ export const DocumentLayout = React.forwardRef<
         style={{
           width: "100%",
           maxWidth: docWidth,
+          height: docHeight,
           margin: "0 auto",
           padding:
             `${margins.top}cm ${margins.right}cm ${margins.bottom}cm ${margins.left}cm`,
@@ -109,7 +117,6 @@ export const DocumentLayout = React.forwardRef<
           color: GLOBAL_THEME.colors.text,
           backgroundColor: "#fff",
           position: "relative",
-          minHeight: docHeight,
           pageBreakAfter: "always",
           boxSizing: "border-box",
         }}
@@ -142,6 +149,21 @@ export const DocumentLayout = React.forwardRef<
 
         {/* FOOTER - Kurum İletişim Bilgisi */}
         {!hideFooter && !data?.kurumIci && <DocumentFooter data={data} />}
+
+        {/* DİNAMİK SAYFA NUMARASI */}
+        {pageNumber !== undefined && totalPages !== undefined && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: "1cm",
+              right: "1.5cm",
+              fontSize: "10pt",
+              color: "#666",
+            }}
+          >
+            {pageNumber} / {totalPages}
+          </div>
+        )}
       </div>
     );
   },

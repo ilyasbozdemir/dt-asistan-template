@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Download,
   Edit,
+  Eye,
   FileArchive,
   FileText,
   LayoutDashboard,
@@ -101,25 +102,25 @@ export default function Home() {
 
     try {
       setIsPrinting(true);
-      const response = await fetch('/api/pdf', {
-        method: 'POST',
+      const response = await fetch("/api/pdf", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           templateId: activeTemplateId,
-          data: formData
+          data: formData,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('PDF oluşturulamadı');
+        throw new Error("PDF oluşturulamadı");
       }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
+      const a = document.createElement("a");
+      a.style.display = "none";
       a.href = url;
       a.download = `Belge-${activeTemplateId}-${new Date().getTime()}.pdf`;
       document.body.appendChild(a);
@@ -128,6 +129,37 @@ export default function Home() {
     } catch (error) {
       console.error("PDF İndirme Hatası:", error);
       alert("PDF oluşturulurken bir hata oluştu.");
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
+  const handleOpenPdfInNewTab = async () => {
+    if (!activeTemplateId || !formData) return;
+
+    try {
+      setIsPrinting(true);
+      const response = await fetch("/api/pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          templateId: activeTemplateId,
+          data: formData,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("PDF oluşturulamadı");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error("PDF Önizleme Hatası:", error);
+      alert("PDF önizlemesi oluşturulurken bir hata oluştu.");
     } finally {
       setIsPrinting(false);
     }
@@ -359,11 +391,25 @@ export default function Home() {
                 <span className="hidden sm:inline">Düzenle</span>
               </button>
               <button
+                onClick={handleOpenPdfInNewTab}
+                disabled={isPrinting}
+                className={`flex items-center gap-2 px-4 py-2 ${
+                  isPrinting ? "bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700"
+                } text-white font-semibold rounded-xl shadow-sm shadow-indigo-600/20 transition-colors text-sm disabled:cursor-not-allowed`}
+              >
+                <Eye className="w-4 h-4" />
+                <span className="hidden sm:inline">Yeni Sekmede Aç</span>
+              </button>
+              <button
                 onClick={handlePrint}
                 disabled={isPrinting}
-                className={`flex items-center gap-2 px-4 py-2 ${isPrinting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold rounded-xl shadow-sm shadow-blue-600/20 transition-colors text-sm disabled:cursor-not-allowed`}
+                className={`flex items-center gap-2 px-4 py-2 ${
+                  isPrinting ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
+                } text-white font-semibold rounded-xl shadow-sm shadow-blue-600/20 transition-colors text-sm disabled:cursor-not-allowed`}
               >
-                <Download className={`w-4 h-4 ${isPrinting ? 'animate-bounce' : ''}`} />
+                <Download
+                  className={`w-4 h-4 ${isPrinting ? "animate-bounce" : ""}`}
+                />
                 <span className="hidden sm:inline">
                   {isPrinting ? "PDF Oluşturuluyor..." : "PDF İndir / Yazdır"}
                 </span>

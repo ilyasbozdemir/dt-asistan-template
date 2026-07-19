@@ -11,11 +11,19 @@ import { DocumentLayout } from './DocumentLayout'
 import { DocumentTable } from './DocumentTable'
 import { PersonelCard, ApprovalSignature, MetadataBlock } from './PersonelCard'
 
+import { paginateData, DEFAULT_LIMITS, LANDSCAPE_LIMITS } from './DynamicPaginatedTable'
+
 interface IhtiyacListesiProps {
-  data: IhtiyacListesiType
+  data: IhtiyacListesiType;
+  pageSize?: "A4" | "A3";
+  orientation?: "portrait" | "landscape";
 }
 
-export const IhtiyacListesiDocument: React.FC<IhtiyacListesiProps> = ({ data }) => {
+export const IhtiyacListesiDocument: React.FC<IhtiyacListesiProps> = ({
+  data,
+  pageSize = "A4",
+  orientation = "portrait",
+}) => {
   // Tablo sütunları
   const columns: any[] = [
     { key: 'siraNo', label: 'Sıra No', width: '8%', align: 'center' },
@@ -27,98 +35,124 @@ export const IhtiyacListesiDocument: React.FC<IhtiyacListesiProps> = ({ data }) 
     { key: 'miktar', label: 'Miktar', width: '12%', align: 'right' }
   ]
 
+  // Sayfalama limitlerini belirle
+  const limits = orientation === "landscape" ? LANDSCAPE_LIMITS : DEFAULT_LIMITS;
+  const items = data.ihtiyacKalemleri || [];
+  const pages = paginateData(items, limits);
+
   return (
-    <DocumentLayout
-      ref={React.useRef<HTMLDivElement>(null)}
-      data={data}
-      hideFooter={false}
-    >
-      {/* METADATA (Sayı, Tarih, Konu) */}
-      <MetadataBlock
-        evrakSayisi={data.evrakSayisi}
-        tarih={data.tarih}
-        dosyaKonusu={data.dosyaKonusu}
-        showBorder={true}
-      />
+    <>
+      {pages.map((pageItems, pageIdx) => {
+        const isFirstPage = pageIdx === 0;
+        const isLastPage = pageIdx === pages.length - 1;
 
-      {/* BAŞLIK - Sunulacak Makam */}
-      <div
-        style={{
-          textAlign: 'center',
-          fontWeight: 'bold',
-          fontSize: '12pt',
-          textTransform: 'uppercase',
-          marginBottom: '20px',
-          pageBreakInside: 'avoid'
-        }}
-      >
-        {data.sunulacakMakamAdi}
-      </div>
+        return (
+          <DocumentLayout
+            key={pageIdx}
+            ref={React.useRef<HTMLDivElement>(null)}
+            data={data}
+            hideFooter={false}
+            pageSize={pageSize}
+            orientation={orientation}
+            pageNumber={pageIdx + 1}
+            totalPages={pages.length}
+          >
+            {/* Sadece İlk Sayfada Gösterilecek Alanlar */}
+            {isFirstPage && (
+              <>
+                {/* METADATA (Sayı, Tarih, Konu) */}
+                <MetadataBlock
+                  evrakSayisi={data.evrakSayisi}
+                  tarih={data.tarih}
+                  dosyaKonusu={data.dosyaKonusu}
+                  showBorder={true}
+                />
 
-      {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 1 */}
-      <div
-        style={{
-          textAlign: 'justify',
-          textIndent: '40px',
-          marginBottom: '15px',
-          fontSize: '12pt',
-          lineHeight: 1.5
-        }}
-      >
-        {data.ihtiyacYeri} ihtiyacı olan aşağıda yazılı mal/hizmet kalemlerinin temin
-        edilmesi gerekmektedir.
-      </div>
+                {/* BAŞLIK - Sunulacak Makam */}
+                <div
+                  style={{
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '12pt',
+                    textTransform: 'uppercase',
+                    marginBottom: '20px',
+                    pageBreakInside: 'avoid'
+                  }}
+                >
+                  {data.sunulacakMakamAdi}
+                </div>
 
-      {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 2 */}
-      <div
-        style={{
-          textAlign: 'justify',
-          textIndent: '40px',
-          marginBottom: '20px',
-          fontSize: '12pt',
-          lineHeight: 1.5
-        }}
-      >
-        Söz konusu ihtiyacın 4734 sayılı Kamu İhale Kanunun {data.maddeNo} maddesine göre
-        temini için gereğini olurlarınıza arz ederim.
-      </div>
+                {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 1 */}
+                <div
+                  style={{
+                    textAlign: 'justify',
+                    textIndent: '40px',
+                    marginBottom: '15px',
+                    fontSize: '12pt',
+                    lineHeight: 1.5
+                  }}
+                >
+                  {data.ihtiyacYeri} ihtiyacı olan aşağıda yazılı mal/hizmet kalemlerinin temin
+                  edilmesi gerekmektedir.
+                </div>
 
-      {/* TALEP EDEN - Sağ hizalanmış */}
-      <PersonelCard
-        adSoyad={data.talepEdenPersonelAdi}
-        unvan={data.talepEdenPersonelUnvan}
-        align="right"
-        marginTop={20}
-        marginBottom={30}
-      />
+                {/* İHTİYAÇ AÇIKLAMASI - PARAGRAPH 2 */}
+                <div
+                  style={{
+                    textAlign: 'justify',
+                    textIndent: '40px',
+                    marginBottom: '20px',
+                    fontSize: '12pt',
+                    lineHeight: 1.5
+                  }}
+                >
+                  Söz konusu ihtiyacın 4734 sayılı Kamu İhale Kanunun {data.maddeNo} maddesine göre
+                  temini için gereğini olurlarınıza arz ederim.
+                </div>
 
-      {/* KALEMLER TABLOSU */}
-      <DocumentTable
-        columns={columns}
-        data={data.ihtiyacKalemleri || []}
-        emptyMessage="Kalem bulunamadı"
-        striped={false}
-      />
+                {/* TALEP EDEN - Sağ hizalanmış */}
+                <PersonelCard
+                  adSoyad={data.talepEdenPersonelAdi}
+                  unvan={data.talepEdenPersonelUnvan}
+                  align="right"
+                  marginTop={20}
+                  marginBottom={30}
+                />
+              </>
+            )}
 
-      {/* ONAY BLOĞU */}
-      {data.olurYazisi && (
-        <ApprovalSignature
-          title="OLUR"
-          date={data.dosyaTarihi}
-          adSoyad={data.onaylayanPersonelAdi}
-          unvan={data.onaylayanPersonelUnvan}
-          showSpace={true}
-          marginTop={40}
-        />
-      )}
-    </DocumentLayout>
+            {/* KALEMLER TABLOSU (Her sayfadaki parçası) */}
+            <DocumentTable
+              columns={columns}
+              data={pageItems}
+              emptyMessage="Kalem bulunamadı"
+              striped={false}
+            />
+
+            {/* ONAY BLOĞU - Sadece Son Sayfada Gösterilir */}
+            {isLastPage && data.olurYazisi && (
+              <div style={{ marginTop: 'auto' }}>
+                <ApprovalSignature
+                  title="OLUR"
+                  date={data.dosyaTarihi}
+                  adSoyad={data.onaylayanPersonelAdi}
+                  unvan={data.onaylayanPersonelUnvan}
+                  showSpace={true}
+                  marginTop={40}
+                />
+              </div>
+            )}
+          </DocumentLayout>
+        );
+      })}
+    </>
   )
 }
 
 /**
  * Export default
  */
-export default IhtiyacListesiDocument
+export default IhtiyacListesiDocument;
 
 /**
  * STORYBOOK / PREVIEW İçin örnek veri

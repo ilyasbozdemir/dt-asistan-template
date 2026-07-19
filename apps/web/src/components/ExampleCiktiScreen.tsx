@@ -15,10 +15,11 @@ import {
   useDocumentPrint,
   useDocumentRender,
   useDocumentValidation,
+  openPDFPreview,
 } from "../lib/useDocumentRender";
 import { DocumentLayout } from "./DocumentLayout";
 import { GLOBAL_THEME } from "../lib/theme.config";
-import { AlertCircle, Download, Loader2, Printer } from "lucide-react";
+import { AlertCircle, Download, Loader2, Printer, Eye } from "lucide-react";
 
 /**
  * TAB 1: İhtiyaç Listesi - REACT TSX İLE
@@ -45,6 +46,8 @@ export function IhtiyacListesiTab(): React.JSX.Element {
 
   // 3. STATE
   const [exportFormat, setExportFormat] = useState<"pdf" | "docx">("pdf");
+  const [pageSize, setPageSize] = useState<"A4" | "A3">("A4");
+  const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
 
   // 4. VALIDASYON KONTROL
   const isValid = validation.valid;
@@ -86,6 +89,16 @@ export function IhtiyacListesiTab(): React.JSX.Element {
     }
   };
 
+  const handlePreview = async () => {
+    if (!docRef.current) return;
+    try {
+      await openPDFPreview(docRef.current, `ihtiyac-listesi-onizleme-${activeDosyaId}`);
+      showToast("Önizleme penceresi açıldı", "success");
+    } catch (err) {
+      showToast(`Önizleme hatası: ${(err as Error).message}`, "error");
+    }
+  };
+
   // UI
   if (loading) {
     return (
@@ -120,6 +133,23 @@ export function IhtiyacListesiTab(): React.JSX.Element {
     return <div>Veri bulunamadı</div>;
   }
 
+  // Örnek testi kolaylaştırmak için çok sayıda kalem ekleyelim ki sayfalama testi kolay olsun
+  const testData = {
+    ...data,
+    ihtiyacKalemleri: data.ihtiyacKalemleri && data.ihtiyacKalemleri.length < 15 ? [
+      ...data.ihtiyacKalemleri,
+      ...Array.from({ length: 25 }, (_, i) => ({
+        siraNo: (data.ihtiyacKalemleri?.length || 0) + i + 1,
+        kodu: `TST-0${i}`,
+        malzemeAdi: `Deneme Kalemi ${i + 1}`,
+        ozelligi: "Test amaçlı otomatik üretildi",
+        birimi: "Adet",
+        kdvOrani: "20",
+        miktar: 10 + i
+      }))
+    ] : data.ihtiyacKalemleri
+  };
+
   return (
     <div className="space-y-4">
       {/* DOĞRULAMA UYARISI */}
@@ -131,22 +161,51 @@ export function IhtiyacListesiTab(): React.JSX.Element {
       )}
 
       {/* KONTROL PANELİ */}
-      <div className="flex flex-wrap gap-3 bg-slate-50 p-4 rounded-lg">
+      <div className="flex flex-wrap gap-3 bg-slate-50 p-4 rounded-lg items-center">
         {/* FORMAT SEÇİMİ */}
-        <select
-          value={exportFormat}
-          onChange={(e) => setExportFormat(e.target.value as any)}
-          className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
-        >
-          <option value="pdf">📄 PDF</option>
-          <option value="docx">📝 DOCX</option>
-        </select>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-slate-500 font-medium">Format</span>
+          <select
+            value={exportFormat}
+            onChange={(e) => setExportFormat(e.target.value as any)}
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white"
+          >
+            <option value="pdf">📄 PDF</option>
+            <option value="docx">📝 DOCX</option>
+          </select>
+        </div>
+
+        {/* SAYFA BOYUTU SEÇİMİ */}
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-slate-500 font-medium">Sayfa Boyutu</span>
+          <select
+            value={pageSize}
+            onChange={(e) => setPageSize(e.target.value as any)}
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white"
+          >
+            <option value="A4">A4 (Standart)</option>
+            <option value="A3">A3 (Geniş)</option>
+          </select>
+        </div>
+
+        {/* YÖNLENDİRME SEÇİMİ */}
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-slate-500 font-medium">Yönlendirme</span>
+          <select
+            value={orientation}
+            onChange={(e) => setOrientation(e.target.value as any)}
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white"
+          >
+            <option value="portrait">📐 Dikey (Portrait)</option>
+            <option value="landscape">🌐 Yatay (Landscape)</option>
+          </select>
+        </div>
 
         {/* EXPORT BUTTON */}
         <button
           onClick={handleExport}
           disabled={pdfRendering}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 mt-4"
         >
           <Download className="w-4 h-4" />
           {pdfRendering ? "İşleniyor..." : "İndir"}
@@ -156,16 +215,25 @@ export function IhtiyacListesiTab(): React.JSX.Element {
         <button
           onClick={handlePrint}
           disabled={printRendering}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 disabled:opacity-50 mt-4"
         >
           <Printer className="w-4 h-4" />
           {printRendering ? "Yazdırılıyor..." : "Yazdır"}
         </button>
 
+        {/* PREVIEW BUTTON */}
+        <button
+          onClick={handlePreview}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 mt-4"
+        >
+          <Eye className="w-4 h-4" />
+          Önizle
+        </button>
+
         {/* YENILE */}
         <button
           onClick={refresh}
-          className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-100"
+          className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-100 mt-4"
         >
           🔄 Yenile
         </button>
@@ -175,14 +243,20 @@ export function IhtiyacListesiTab(): React.JSX.Element {
       <div
         ref={docRef}
         style={{
-          backgroundColor: "#fff",
-          boxShadow: "0 0 20px rgba(0,0,0,0.1)",
+          backgroundColor: "#f0f2f5",
           padding: "20px",
           borderRadius: "8px",
-          pageBreakAfter: "always",
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          overflowX: "auto"
         }}
       >
-        <IhtiyacListesiDocument data={data} />
+        <IhtiyacListesiDocument
+          data={testData}
+          pageSize={pageSize}
+          orientation={orientation}
+        />
       </div>
 
       {/* HIDDEN PRINT STYLES */}
