@@ -24,6 +24,7 @@ export const IhtiyacListesiSchema = z.object({
   dosyaTarihi: z.any().optional(),
   onaylayanPersonelAdi: z.any().optional(),
   onaylayanPersonelUnvan: z.any().optional(),
+  olurBaslik: z.any().optional(),
   hazirlayanPersonelAdi: z.any().optional(),
   hazırlayanPersonelUnvan: z.any().optional(),
   hazirlayanTelefon: z.any().optional(),
@@ -152,8 +153,12 @@ export const defaultIhtiyacListesiData: Partial<IhtiyacListesiType> = {
   "dosyaTarihi": "14.06.2026",
   "onaylayanPersonelAdi": "Dr. Mehmet Demir",
   "onaylayanPersonelUnvan": "İl Sağlık Müdürü",
+  "olurBaslik": "OLUR",
   "hazirlayanPersonelAdi": "Ayşe Demir",
   "hazırlayanPersonelUnvan": "V.H.K.İ.",
   "hazirlayanTelefon": "0312 555 44 33",
-  "hazirlayanEposta": "hazirlayan@kurum.gov.tr"
+  "hazirlayanEposta": "hazirlayan@kurum.gov.tr",
+  "firstPageLimit": 12,
+  "middlePageLimit": 18,
+  "lastPageLimit": 8
 };

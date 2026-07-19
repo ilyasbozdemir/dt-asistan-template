@@ -1,7 +1,7 @@
 import React from "react";
 import { DocumentLayout } from "../../DocumentLayout";
 import { IhtiyacListesiType } from "../../../lib/schemas/IhtiyacListesi.schema";
-import { ApprovalSignature } from "../../PersonelCard";
+import { ApprovalSignature } from "../../ApprovalSignature";
 
 interface IhtiyacListesiProps {
   data?: Partial<IhtiyacListesiType>;

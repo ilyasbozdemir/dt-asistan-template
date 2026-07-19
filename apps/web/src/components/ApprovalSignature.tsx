@@ -33,7 +33,11 @@ export const PersonelCard: React.FC<PersonelCardProps> = ({
         display: "flex",
         width: "100%",
         pageBreakInside: "avoid",
-        justifyContent: align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        justifyContent: align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
         marginTop: `${marginTop}px`,
         marginBottom: `${marginBottom}px`,
       }}
@@ -95,7 +99,11 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
         display: "flex",
         width: "100%",
         pageBreakInside: "avoid",
-        justifyContent: align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        justifyContent: align === "center"
+          ? "center"
+          : align === "right"
+          ? "flex-end"
+          : "flex-start",
         marginTop: `${marginTop}px`,
       }}
     >
@@ -108,27 +116,29 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
       >
         {/* BAŞLIK */}
         <div
-          style={{ fontWeight: "bold", fontSize: "12pt", marginBottom: "10px" }}
+          style={{ fontWeight: "bold", fontSize: "12pt", marginBottom: "4px" }}
         >
           {title}
         </div>
 
         {/* TARİH */}
         {date && (
-          <div style={{ fontSize: "11pt", marginBottom: "15px" }}>
+          <div style={{ fontSize: "11pt", marginBottom: "8px" }}>
             {date}
           </div>
         )}
 
         {/* İMZA ALANI */}
         {showSpace && (
-          <div style={{ minHeight: "40px", marginBottom: "10px" }} />
+          <div
+            style={{ minHeight: "30px", marginBottom: "4px" }}
+          />
         )}
 
         {/* AD-SOYAD */}
         {adSoyad && (
           <div
-            style={{ fontSize: "11pt", fontWeight: "bold", marginTop: "10px" }}
+            style={{ fontSize: "11pt", fontWeight: "bold", marginTop: "4px" }}
           >
             {adSoyad}
           </div>
