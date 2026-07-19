@@ -215,20 +215,31 @@ export const MetadataBlock: React.FC<MetadataBlockProps> = ({
         pageBreakInside: 'avoid'
       }}
     >
-      <div>
-        {evrakSayisi && (
-          <div style={{ fontSize: '11pt' }}>
-            <strong>Sayı:</strong> {evrakSayisi}
-          </div>
-        )}
-        {dosyaKonusu && (
-          <div style={{ fontSize: '11pt' }}>
-            <strong>Konu:</strong> {dosyaKonusu}
-          </div>
-        )}
+      {/* Sol Taraf: Sayı ve Konu (Sayfanın yarısını geçemez) */}
+      <div style={{ maxWidth: '50%' }}>
+        <table style={{ border: 'none', padding: 0, margin: 0, fontSize: '11pt', borderSpacing: 0 }}>
+          <tbody>
+            {evrakSayisi && (
+              <tr>
+                <td style={{ verticalAlign: 'top', padding: 0, width: '45px' }}><strong>Sayı</strong></td>
+                <td style={{ verticalAlign: 'top', padding: '0 5px 0 0' }}><strong>:</strong></td>
+                <td style={{ verticalAlign: 'top', padding: 0 }}>{evrakSayisi}</td>
+              </tr>
+            )}
+            {dosyaKonusu && (
+              <tr>
+                <td style={{ verticalAlign: 'top', padding: 0, width: '45px' }}><strong>Konu</strong></td>
+                <td style={{ verticalAlign: 'top', padding: '0 5px 0 0' }}><strong>:</strong></td>
+                <td style={{ verticalAlign: 'top', padding: 0, textAlign: 'justify' }}>{dosyaKonusu}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
+
+      {/* Sağ Taraf: Tarih */}
       {tarih && (
-        <div style={{ fontSize: '11pt' }}>
+        <div style={{ fontSize: '11pt', textAlign: 'right' }}>
           <strong>Tarih:</strong> {tarih}
         </div>
       )}
