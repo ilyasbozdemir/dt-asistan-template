@@ -34,14 +34,23 @@ export const PersonelCard: React.FC<PersonelCardProps> = ({
 }) => {
   if (!adSoyad) return null
 
+  const alignStyles: React.CSSProperties = {
+    textAlign: 'center',
+    width: 'fit-content',
+    minWidth: '250px',
+    ...(align === 'center' ? { margin: '0 auto' } : {}),
+    ...(align === 'right' ? { marginLeft: 'auto' } : {}),
+    ...(align === 'left' ? { marginRight: 'auto' } : {})
+  }
+
   return (
     <div
       style={{
-        textAlign: align,
         marginTop: `${marginTop}px`,
         marginBottom: `${marginBottom}px`,
         lineHeight: 1.8,
-        pageBreakInside: 'avoid'
+        pageBreakInside: 'avoid',
+        ...alignStyles
       }}
     >
       <div style={{ fontWeight: 'bold', fontSize: '11pt' }}>{adSoyad}</div>
@@ -67,6 +76,7 @@ interface ApprovalSignatureProps {
   unvan?: string | null
   showSpace?: boolean // İmza için boş alan
   marginTop?: number
+  align?: 'left' | 'center' | 'right'
 }
 
 export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
@@ -75,16 +85,26 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
   adSoyad,
   unvan,
   showSpace = true,
-  marginTop = 40
+  marginTop = 40,
+  align = 'center'
 }) => {
+  const alignStyles: React.CSSProperties = {
+    textAlign: 'center',
+    width: 'fit-content',
+    minWidth: '250px',
+    ...(align === 'center' ? { margin: '0 auto' } : {}),
+    ...(align === 'right' ? { marginLeft: 'auto' } : {}),
+    ...(align === 'left' ? { marginRight: 'auto' } : {})
+  }
+
   return (
     <div
       className="approval-block"
       style={{
-        textAlign: 'center',
         marginTop: `${marginTop}px`,
         lineHeight: 1.5,
-        pageBreakInside: 'avoid'
+        pageBreakInside: 'avoid',
+        ...alignStyles
       }}
     >
       {/* BAŞLIK */}
