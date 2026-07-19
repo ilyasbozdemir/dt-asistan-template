@@ -23,3 +23,7 @@ export const TEMPLATE_REGISTRY = [
     defaultData: defaultIhtiyacListesiData 
   }
 ];
+
+// Mapping Resolver
+export * from './resolver/types';
+export * from './resolver/mappingResolver';
