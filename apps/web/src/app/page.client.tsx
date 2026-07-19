@@ -394,7 +394,9 @@ export default function Home() {
                 onClick={handleOpenPdfInNewTab}
                 disabled={isPrinting}
                 className={`flex items-center gap-2 px-4 py-2 ${
-                  isPrinting ? "bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700"
+                  isPrinting
+                    ? "bg-indigo-400"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 } text-white font-semibold rounded-xl shadow-sm shadow-indigo-600/20 transition-colors text-sm disabled:cursor-not-allowed`}
               >
                 <Eye className="w-4 h-4" />
@@ -465,13 +467,160 @@ export default function Home() {
                           )
                           : isObject
                           ? (
-                            <textarea
-                              className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono text-slate-600 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[140px] resize-y scrollbar-thin"
-                              defaultValue={JSON.stringify(value, null, 2)}
-                              onChange={(e) =>
-                                handleJsonChange(key, e.target.value)}
-                              placeholder="Geçerli JSON verisi..."
-                            />
+                            <div className="flex flex-col gap-2">
+                              {/* 1. Array of Strings (e.g. antetSatirlari) */}
+                              {Array.isArray(value) &&
+                                  value.every((item) =>
+                                    typeof item === "string"
+                                  )
+                                ? (
+                                  <div className="flex flex-col gap-2 border border-slate-200 dark:border-slate-700 p-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/30">
+                                    {value.map((item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex gap-2 items-center"
+                                      >
+                                        <input
+                                          type="text"
+                                          className="flex-1 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                                          value={item}
+                                          onChange={(e) => {
+                                            const newArr = [...value];
+                                            newArr[idx] = e.target.value;
+                                            handleInputChange(key, newArr);
+                                          }}
+                                        />
+                                        <button
+                                          onClick={() => {
+                                            const newArr = value.filter((
+                                              _,
+                                              i,
+                                            ) => i !== idx);
+                                            handleInputChange(key, newArr);
+                                          }}
+                                          className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg text-xs"
+                                          title="Satırı Sil"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ))}
+                                    <button
+                                      onClick={() =>
+                                        handleInputChange(key, [...value, ""])}
+                                      className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left mt-1"
+                                    >
+                                      + Satır Ekle
+                                    </button>
+                                  </div>
+                                )
+                                : /* 2. Array of Objects (e.g. ihtiyacKalemleri) */
+                                Array.isArray(value)
+                                ? (
+                                  <div className="flex flex-col gap-3 border border-slate-200 dark:border-slate-700 p-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/30">
+                                    {value.map((item: any, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="border-b border-slate-200 dark:border-slate-700 pb-3 last:border-0 last:pb-0 flex flex-col gap-2"
+                                      >
+                                        <div className="flex justify-between items-center">
+                                          <span className="text-xs font-semibold text-slate-400">
+                                            Kalem #{idx + 1}
+                                          </span>
+                                          <button
+                                            onClick={() => {
+                                              const newArr = value.filter((
+                                                _,
+                                                i,
+                                              ) => i !== idx);
+                                              handleInputChange(key, newArr);
+                                            }}
+                                            className="text-xs text-red-500 hover:underline"
+                                          >
+                                            Sil
+                                          </button>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                          {Object.entries(item).map((
+                                            [subKey, subVal],
+                                          ) => (
+                                            <div
+                                              key={subKey}
+                                              className="flex flex-col gap-1"
+                                            >
+                                              <span className="text-[10px] text-slate-400 font-semibold uppercase">
+                                                {subKey}
+                                              </span>
+                                              <input
+                                                type={typeof subVal === "number"
+                                                  ? "number"
+                                                  : "text"}
+                                                className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                                                value={subVal as
+                                                  | string
+                                                  | number}
+                                                onChange={(e) => {
+                                                  const newArr = [...value];
+                                                  newArr[idx] = {
+                                                    ...item,
+                                                    [subKey]:
+                                                      typeof subVal === "number"
+                                                        ? Number(e.target.value)
+                                                        : e.target.value,
+                                                  };
+                                                  handleInputChange(
+                                                    key,
+                                                    newArr,
+                                                  );
+                                                }}
+                                              />
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ))}
+                                    <button
+                                      onClick={() => {
+                                        const templateObj = value[0]
+                                          ? Object.keys(value[0]).reduce(
+                                            (acc, curr) => {
+                                              acc[curr] =
+                                                typeof (value[0] as any)[
+                                                    curr
+                                                  ] === "number"
+                                                  ? 0
+                                                  : "";
+                                              return acc;
+                                            },
+                                            {} as any,
+                                          )
+                                          : {};
+                                        handleInputChange(key, [
+                                          ...value,
+                                          templateObj,
+                                        ]);
+                                      }}
+                                      className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left mt-1"
+                                    >
+                                      + Yeni Kalem Ekle
+                                    </button>
+                                  </div>
+                                )
+                                : (
+                                  /* 3. Fallback to JSON Textarea for generic objects */
+                                  <textarea
+                                    className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono text-slate-600 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[140px] resize-y scrollbar-thin"
+                                    defaultValue={JSON.stringify(
+                                      value,
+                                      null,
+                                      2,
+                                    )}
+                                    onChange={(e) =>
+                                      handleJsonChange(key, e.target.value)}
+                                    placeholder="Geçerli JSON verisi..."
+                                  />
+                                )}
+                            </div>
                           )
                           : (
                             <input

@@ -73,6 +73,8 @@ export const DocumentLayout = React.forwardRef<
       }
     `;
 
+    const isLastPage = pageNumber !== undefined && totalPages !== undefined && pageNumber === totalPages;
+
     return (
       <div
         ref={ref}
@@ -91,7 +93,7 @@ export const DocumentLayout = React.forwardRef<
           color: GLOBAL_THEME.colors.text,
           backgroundColor: "#fff",
           position: "relative",
-          pageBreakAfter: "always",
+          pageBreakAfter: isLastPage ? "avoid" : "always",
           pageBreakInside: "avoid",
           boxSizing: "border-box",
         }}
