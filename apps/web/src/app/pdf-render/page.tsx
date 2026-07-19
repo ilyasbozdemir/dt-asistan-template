@@ -32,24 +32,21 @@ export default async function PdfRenderPage({
   }
 
   return (
-    <div className="pdf-print-wrapper bg-white min-h-screen">
-      {/* 
-        Tailwind sınıflarını ve özel fontları içerir.
-        DocumentLayout zaten içinde kendi özel printStyles'ını ve @page ayarlarını getiriyor.
-      */}
+    <>
+      {/* DocumentLayout @page ve yazdırma stillerini zaten içinde barındırıyor */}
       <ActiveComponent data={pdfData.data} />
 
-      {/* Puppeteer'a render'ın bittiğini ve her şeyin dom'a yerleştiğini bildiren script */}
+      {/* Puppeteer'a render'ın bittiğini bildiren script */}
       <script
         dangerouslySetInnerHTML={{
           __html: `
-            // Biraz bekleyip her şeyin tam oturduğundan emin olalım (görseller vb.)
+            // Fontların ve görsellerin tam oturması için bekle
             setTimeout(() => {
               window.__PDF_READY = true;
-            }, 500);
+            }, 1000);
           `,
         }}
       />
-    </div>
+    </>
   );
 }

@@ -57,7 +57,7 @@ export const DocumentLayout = React.forwardRef<
       @media print {
         @page {
           size: ${pageSize} ${orientation};
-          margin: 1.5cm;
+          margin: 0;
         }
 
         body {
@@ -68,7 +68,7 @@ export const DocumentLayout = React.forwardRef<
 
         .document-container {
           box-shadow: none !important;
-          margin: 0 !important;
+          margin: 0 auto !important;
           width: 100% !important;
           max-width: 100% !important;
           min-height: 0 !important;
