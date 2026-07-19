@@ -58,46 +58,17 @@ export const DocumentLayout = React.forwardRef<
       docHeight = orientation === "landscape" ? "29.7cm" : "42cm";
     }
 
-    // Dynamic Print Styles
+    // Dynamic Print Styles (Only @page and body require global injection, others are inline)
     const dynamicPrintStyles = `
       @media print {
         @page {
           size: ${pageSize} ${orientation};
           margin: 0;
         }
-
         body {
           margin: 0;
           padding: 0;
           background: white;
-        }
-
-        .document-container {
-          box-shadow: none !important;
-          margin: 0 auto !important;
-          width: 100% !important;
-          max-width: 100% !important;
-          min-height: ${docHeight} !important;
-          height: ${docHeight} !important;
-          page-break-after: always !important;
-          page-break-inside: avoid !important;
-        }
-
-        /* Page break rules */
-        table {
-          page-break-inside: avoid;
-        }
-        tr {
-          page-break-inside: avoid;
-        }
-        .approval-block {
-          page-break-inside: avoid;
-        }
-
-        /* Widow/Orphan control */
-        p {
-          orphans: 2;
-          widows: 2;
         }
       }
     `;
@@ -110,6 +81,7 @@ export const DocumentLayout = React.forwardRef<
           width: "100%",
           maxWidth: docWidth,
           height: docHeight,
+          minHeight: docHeight,
           margin: "0 auto",
           padding:
             `${margins.top}cm ${margins.right}cm ${margins.bottom}cm ${margins.left}cm`,
@@ -120,6 +92,7 @@ export const DocumentLayout = React.forwardRef<
           backgroundColor: "#fff",
           position: "relative",
           pageBreakAfter: "always",
+          pageBreakInside: "avoid",
           boxSizing: "border-box",
         }}
       >
