@@ -384,7 +384,7 @@ export default function Home() {
                             <textarea
                               className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono text-slate-600 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[140px] resize-y scrollbar-thin"
                               defaultValue={JSON.stringify(value, null, 2)}
-                              onBlur={(e) =>
+                              onChange={(e) =>
                                 handleJsonChange(key, e.target.value)}
                               placeholder="Geçerli JSON verisi..."
                             />
