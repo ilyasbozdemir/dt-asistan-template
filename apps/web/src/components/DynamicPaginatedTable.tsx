@@ -39,7 +39,15 @@ export function paginateData<T>(
   let currentIndex = 0;
 
   // 1. First Page
-  const firstPageSize = Math.min(data.length, limits.firstPage);
+  let firstPageSize = Math.min(data.length, limits.firstPage);
+  
+  // If the total items don't fit on a single page with the signature block, 
+  // but the first page takes all of them, we must leave some items for the next page.
+  if (data.length > limits.lastPage && firstPageSize === data.length) {
+    const leaveForNext = Math.min(3, limits.lastPage);
+    firstPageSize = Math.max(1, data.length - leaveForNext);
+  }
+  
   pages.push(data.slice(0, firstPageSize));
   currentIndex += firstPageSize;
 
