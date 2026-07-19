@@ -1,10 +1,3 @@
-/**
- * SHARED COMPONENTS
- *
- * 1. PersonelCard - Personel adı ve unvan bloğu
- * 2. ApprovalSignature - Onay/İmza bloğu
- */
-
 import React from "react";
 
 /**
@@ -36,23 +29,33 @@ export const PersonelCard: React.FC<PersonelCardProps> = ({
 
   return (
     <div
-      className={`flex w-full break-inside-avoid ${
-        align === "center" ? "justify-center" : align === "right" ? "justify-end" : "justify-start"
-      }`}
-      style={{ marginTop: `${marginTop}px`, marginBottom: `${marginBottom}px` }}
+      style={{
+        display: "flex",
+        width: "100%",
+        pageBreakInside: "avoid",
+        justifyContent: align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        marginTop: `${marginTop}px`,
+        marginBottom: `${marginBottom}px`,
+      }}
     >
-      <div className="text-center min-w-[250px] leading-[1.8]">
-        <div className="font-bold text-[11pt]">{adSoyad}</div>
-        {unvan && <div className="text-[11pt]">{unvan}</div>}
+      <div
+        style={{
+          textAlign: "center",
+          minWidth: "250px",
+          lineHeight: 1.8,
+        }}
+      >
+        <div style={{ fontWeight: "bold", fontSize: "11pt" }}>{adSoyad}</div>
+        {unvan && <div style={{ fontSize: "11pt" }}>{unvan}</div>}
         {showContactInfo && (
           <>
             {telefon && (
-              <div className="text-[10pt] text-gray-600">
+              <div style={{ fontSize: "10pt", color: "#666" }}>
                 Tel: {telefon}
               </div>
             )}
             {eposta && (
-              <div className="text-[10pt] text-gray-600">
+              <div style={{ fontSize: "10pt", color: "#666" }}>
                 E-posta: {eposta}
               </div>
             )}
@@ -88,37 +91,44 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
 }) => {
   return (
     <div
-      className={`flex w-full break-inside-avoid ${
-        align === "center" ? "justify-center" : align === "right" ? "justify-end" : "justify-start"
-      }`}
-      style={{ marginTop: `${marginTop}px` }}
+      style={{
+        display: "flex",
+        width: "100%",
+        pageBreakInside: "avoid",
+        justifyContent: align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+        marginTop: `${marginTop}px`,
+      }}
     >
       <div
-        className="text-center min-w-[250px] leading-relaxed"
+        style={{
+          textAlign: "center",
+          minWidth: "250px",
+          lineHeight: 1.5,
+        }}
       >
         {/* BAŞLIK */}
         <div
-          className="font-bold text-[12pt] mb-2.5"
+          style={{ fontWeight: "bold", fontSize: "12pt", marginBottom: "10px" }}
         >
           {title}
         </div>
 
         {/* TARİH */}
         {date && (
-          <div className="text-[11pt] mb-[15px]">
+          <div style={{ fontSize: "11pt", marginBottom: "15px" }}>
             {date}
           </div>
         )}
 
         {/* İMZA ALANI */}
         {showSpace && (
-          <div className="min-h-[40px] mb-2.5" />
+          <div style={{ minHeight: "40px", marginBottom: "10px" }} />
         )}
 
         {/* AD-SOYAD */}
         {adSoyad && (
           <div
-            className="text-[11pt] font-bold mt-2.5"
+            style={{ fontSize: "11pt", fontWeight: "bold", marginTop: "10px" }}
           >
             {adSoyad}
           </div>
@@ -126,7 +136,7 @@ export const ApprovalSignature: React.FC<ApprovalSignatureProps> = ({
 
         {/* UNVAN */}
         {unvan && (
-          <div className="text-[11pt]">
+          <div style={{ fontSize: "11pt" }}>
             {unvan}
           </div>
         )}
@@ -159,21 +169,21 @@ export const CommissionList: React.FC<CommissionListProps> = ({
   if (!members || members.length === 0) return null;
 
   return (
-    <div className="break-inside-avoid" style={{ marginTop: `${marginTop}px` }}>
+    <div style={{ marginTop: `${marginTop}px`, pageBreakInside: "avoid" }}>
       <div
-        className="font-bold text-[12pt] mb-[15px]"
+        style={{ fontWeight: "bold", fontSize: "12pt", marginBottom: "15px" }}
       >
         {title}
       </div>
 
       {members.map((member, idx) => (
-        <div key={idx} className="mb-3 leading-relaxed">
-          <div className="text-[11pt]">
+        <div key={idx} style={{ marginBottom: "12px", lineHeight: 1.6 }}>
+          <div style={{ fontSize: "11pt" }}>
             <strong>{member.adSoyad}</strong>
           </div>
-          <div className="text-[10pt]">{member.unvan}</div>
+          <div style={{ fontSize: "10pt" }}>{member.unvan}</div>
           {member.gorevi && (
-            <div className="text-[10pt] text-gray-600">
+            <div style={{ fontSize: "10pt", color: "#666" }}>
               ({member.gorevi})
             </div>
           )}
@@ -202,37 +212,54 @@ export const MetadataBlock: React.FC<MetadataBlockProps> = ({
 }) => {
   return (
     <div
-      className={`flex justify-between mb-5 break-inside-avoid ${showBorder ? "pb-2.5 border-b border-gray-300" : ""}`}
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "20px",
+        paddingBottom: showBorder ? "10px" : 0,
+        borderBottom: showBorder ? `1px solid #ccc` : "none",
+        pageBreakInside: "avoid",
+      }}
     >
       {/* Sol Taraf: Sayı ve Konu (Sayfanın yarısını geçemez) */}
-      <div className="max-w-[50%]">
+      <div style={{ maxWidth: "50%" }}>
         <table
-          className="border-none p-0 m-0 text-[11pt] border-spacing-0"
+          style={{
+            border: "none",
+            padding: 0,
+            margin: 0,
+            fontSize: "11pt",
+            borderSpacing: 0,
+          }}
         >
           <tbody>
             {evrakSayisi && (
               <tr>
-                <td className="align-top p-0 w-[45px]">
+                <td style={{ verticalAlign: "top", padding: 0, width: "45px" }}>
                   <strong>Sayı</strong>
                 </td>
-                <td className="align-top pr-1.5">
+                <td style={{ verticalAlign: "top", padding: "0 5px 0 0" }}>
                   <strong>:</strong>
                 </td>
-                <td className="align-top p-0">
+                <td style={{ verticalAlign: "top", padding: 0 }}>
                   {evrakSayisi}
                 </td>
               </tr>
             )}
             {dosyaKonusu && (
               <tr>
-                <td className="align-top p-0 w-[45px]">
+                <td style={{ verticalAlign: "top", padding: 0, width: "45px" }}>
                   <strong>Konu</strong>
                 </td>
-                <td className="align-top pr-1.5">
+                <td style={{ verticalAlign: "top", padding: "0 5px 0 0" }}>
                   <strong>:</strong>
                 </td>
                 <td
-                  className="align-top p-0 text-justify"
+                  style={{
+                    verticalAlign: "top",
+                    padding: 0,
+                    textAlign: "justify",
+                  }}
                 >
                   {dosyaKonusu}
                 </td>
@@ -244,7 +271,7 @@ export const MetadataBlock: React.FC<MetadataBlockProps> = ({
 
       {/* Sağ Taraf: Tarih */}
       {tarih && (
-        <div className="text-[11pt] text-right">
+        <div style={{ fontSize: "11pt", textAlign: "right" }}>
           <strong>Tarih:</strong> {tarih}
         </div>
       )}

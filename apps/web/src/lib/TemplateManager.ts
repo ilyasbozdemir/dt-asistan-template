@@ -22,6 +22,7 @@ export interface TemplateConfig {
   legacyMapping?: ProcessMapping // Backward compat
   metadata: {
     pageSize: 'A4' | 'A3'
+    orientation?: 'portrait' | 'landscape'
     margins: {
       top: number
       right: number

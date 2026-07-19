@@ -1,6 +1,7 @@
 import React from "react";
 import { DocumentLayout } from "../../DocumentLayout";
 import { IhtiyacListesiType } from "../../../lib/schemas/IhtiyacListesi.schema";
+import { ApprovalSignature } from "../../PersonelCard";
 
 interface IhtiyacListesiProps {
   data?: Partial<IhtiyacListesiType>;
@@ -141,19 +142,16 @@ export function IhtiyacListesi({ data = {} }: IhtiyacListesiProps) {
         </tbody>
       </table>
 
-      {/* OLUR ALANI (Sol Alt) */}
+      {/* ONAY BLOĞU */}
       {data?.olurYazisi && (
-        <div style={{ marginTop: "50px" }}>
-          <strong>OLUR</strong>
-          <br />
-          {data?.dosyaTarihi}
-          <br />
-          <br />
-          <br />
-          {data?.onaylayanPersonelAdi}
-          <br />
-          {data?.onaylayanPersonelUnvan}
-        </div>
+        <ApprovalSignature
+          title="OLUR"
+          date={data?.dosyaTarihi}
+          adSoyad={data?.onaylayanPersonelAdi}
+          unvan={data?.onaylayanPersonelUnvan}
+          showSpace={true}
+          marginTop={40}
+        />
       )}
     </DocumentLayout>
   );
