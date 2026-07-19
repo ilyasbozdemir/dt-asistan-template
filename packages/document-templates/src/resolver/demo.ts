@@ -2,8 +2,21 @@ import { DatabaseSync } from 'node:sqlite';
 import { resolveTemplateData } from './mappingResolver';
 import { ProcessMapping } from './types';
 
-// 1. Create in-memory SQLite DB
-const db = new DatabaseSync(':memory:');
+import { join } from 'node:path';
+import { existsSync, unlinkSync } from 'node:fs';
+
+const dbPath = join(__dirname, 'demo.db');
+
+// Delete existing DB file if it exists to start fresh
+if (existsSync(dbPath)) {
+  try {
+    unlinkSync(dbPath);
+  } catch (err) {
+    // Ignore error if file is locked or cannot be deleted
+  }
+}
+
+const db = new DatabaseSync(dbPath);
 
 // 2. Create tables
 db.exec(`
